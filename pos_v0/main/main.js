@@ -10,5 +10,5 @@ function printReceipt(inputs) {
 }
 
 function getItemInfo(item) {
-  return '名称：' + item.name + '，数量：' + item.count + item.unit + '，单价：' + item.price.toFixed(2) + '(元)，小计：' + (item.count * item.price).toFixed(2) + '(元)\n';
+  return '名称：' + item.name + '，数量：' + item.count + item.unit +'，单价：' + item.price.toFixed(2) + '(元)，小计：' + (item.count * item.price).toFixed(2) + '(元)\n';
 }

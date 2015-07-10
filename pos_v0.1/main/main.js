@@ -22,7 +22,7 @@ function mergeSameItem(items) {
     if (results[results.length - 1].barcode === items[i].barcode) {
       results[results.length - 1].count += 1;
     } else {
-      results[results.length] = items[i];
+      results.push(items[i]);
       results[results.length - 1].count = 1;
     }
   }
