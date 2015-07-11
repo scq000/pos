@@ -56,7 +56,7 @@ function buyTwoGetOneFree(counter, discountBarcodes) {
   _.forEach(counter, function(barcodeCount, barcode) {
     var item = findItemByBarcode(barcode);
     result[barcode] = {};
-    result[barcode].discount = discountBarcodes.indexOf(barcode) != -1 ? Math.floor(barcodeCount / 3) * item.price : 0;
+    result[barcode].discount = _.includes(discountBarcodes, barcode) ? Math.floor(barcodeCount / 3) * item.price : 0;
     result[barcode].info = result[barcode].discount === 0 ? '' : '名称：' + item.name + '，数量：' + Math.floor(barcodeCount / 3) + item.unit + '\n';
   });
   return result;
