@@ -1,5 +1,6 @@
 function printReceipt(barcodes) {
-  var cartItems = getCartItems(barcodes);
+  var items = getItems(barcodes);
+  var cartItems = getCartItems(items);
 
   var receipt =
     '***<没钱赚商店>收据***\n' +
@@ -11,15 +12,29 @@ function printReceipt(barcodes) {
   console.log(receipt);
 }
 
-function getCartItems(barcodes) {
+function getItems(barcodes) {
+  var items = [];
+
+  var allItems = loadAllItems();
+  barcodes.forEach(function (barcode) {
+    var item = findItem(allItems, barcode);
+    if (item) {
+      items.push(item);
+    }
+  });
+
+  return items;
+}
+
+function getCartItems(items) {
   var cartItems = [];
 
-  barcodes.forEach(function (barcode) {
-    var cartItem = findItem(cartItems, barcode);
+  items.forEach(function (item) {
+    var cartItem = findItem(cartItems, item.barcode);
     if (cartItem) {
       cartItem.count++;
     } else {
-      cartItem = findItem(loadAllItems(),barcode);
+      cartItem = item;
       cartItem.count = 1;
       cartItems.push(cartItem);
     }
@@ -29,9 +44,14 @@ function getCartItems(barcodes) {
 }
 
 function findItem(cartItems,barcode) {
-  return cartItems.filter(function(cartItem) {
-    return cartItem.barcode === barcode;
-  })[0];
+  var item;
+  cartItems.forEach(function (cartItem) {
+    if (cartItem.barcode === barcode) {
+      item = cartItem;
+      return false;
+    }
+  });
+  return item;
 }
 
 function getSubTotal(count, price) {
