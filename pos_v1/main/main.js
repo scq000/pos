@@ -27,20 +27,18 @@ function getItem(barcode){
   }
 }
 
-
 function getCartItems(tags) {
   var cartItems = [];
 
   tags.forEach(function(tag) {
     var barcode = tag.split('-')[0];
     var count = tag.split('-')[1] || 1;
-    var cartItem = findItem(cartItems,barcode);
+    var cartItem = findCartItem(cartItems, barcode);
     if(cartItem) {
       cartItem.count += count;
     }else {
-      cartItem = getItem(barcode);
-      cartItem.count = count;
-      cartItems.push(cartItem);
+      var item = getItem(barcode);
+      cartItems.push({ item: item, count: count, freeCount: 0 });
     }
   });
 
@@ -60,25 +58,24 @@ function setPromotions(cartItems) {
 
 function  buyTwoGetOneFree(cartItems,barcodes) {
   cartItems.forEach(function(cartItem) {
-    if(barcodes.indexOf(cartItem.barcode) != -1) {
-      cartItem.freeCount = Math.floor(cartItem.count / 3);
-    }else{
-      cartItem.freeCount = 0;
-    }
+    var isExisted = (barcodes.indexOf(cartItem.item.barcode) != -1);
+    cartItem.freeCount = isExisted ? Math.floor(cartItem.count / 3)
+                                                            : 0;
+
   });
 }
 
 
-function findItem(cartItems,barcode) {
+function findCartItem(cartItems, barcode) {
   for(var i = 0; i < cartItems.length; i++) {
-    if(cartItems[i].barcode === barcode) {
+    if(cartItems[i].item.barcode === barcode) {
       return cartItems[i];
     }
   }
 }
 
 function getSubTotal(cartItem) {
-  return (cartItem.count - cartItem.freeCount) * cartItem.price;
+  return (cartItem.count - cartItem.freeCount) * cartItem.item.price;
 }
 
 function getAmount(cartItems) {
@@ -95,7 +92,7 @@ function getSavedMoney(cartItems) {
   var savedMoney = 0;
 
   cartItems.forEach(function(cartItem) {
-    savedMoney += cartItem.freeCount * cartItem.price;
+    savedMoney += cartItem.freeCount * cartItem.item.price;
   });
 
   return savedMoney;
@@ -107,8 +104,8 @@ function getFreeItemsString(cartItems) {
   cartItems.forEach(function(cartItem) {
     if(cartItem.freeCount) {
       itemsString +=
-        '名称：' + cartItem.name +
-        '，数量：'　+ cartItem.freeCount + cartItem.unit + '\n';
+        '名称：' + cartItem.item.name +
+        '，数量：'　+ cartItem.freeCount + cartItem.item.unit + '\n';
     }
   });
 
@@ -120,9 +117,9 @@ function getCartItemsString(cartItems) {
 
   cartItems.forEach(function(cartItem) {
     itemsString +=
-      '名称：' + cartItem.name +
-      '，数量：' + cartItem.count + cartItem.unit +
-      '，单价：' + formatPrice(cartItem.price) +
+      '名称：' + cartItem.item.name +
+      '，数量：' + cartItem.count + cartItem.item.unit +
+      '，单价：' + formatPrice(cartItem.item.price) +
       '(元)，小计：' + formatPrice(getSubTotal(cartItem)) + '(元)\n';
   });
 
