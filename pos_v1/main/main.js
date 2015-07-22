@@ -61,7 +61,6 @@ function  buyTwoGetOneFree(cartItems,barcodes) {
     var isExisted = (barcodes.indexOf(cartItem.item.barcode) != -1);
     cartItem.freeCount = isExisted ? Math.floor(cartItem.count / 3)
                                                             : 0;
-
   });
 }
 
