@@ -8,6 +8,7 @@ function Receipt(cart) {
                                '节省：' + cart.getSavedMoney().toFixed(2) + '(元)\n';
   this.end = '**********************';
 }
+
 Receipt.prototype.getCurrentTime = function () {
   var date = new Date();
   var digitToString = function(digit) {
@@ -15,6 +16,7 @@ Receipt.prototype.getCurrentTime = function () {
   };
   return date.getFullYear() + '年' + digitToString(date.getMonth() + 1) + '月' + digitToString(date.getDate()) + '日 ' + digitToString(date.getHours()) + ':' + digitToString(date.getMinutes()) + ':' + digitToString(date.getSeconds());
 };
+
 Receipt.prototype.print = function() {
   console.log(this.header + this.timeString + this.separator +
                        this.cartItemsString + this.separator + this.discountItemsString +this.separator + this.summary + this.end );
