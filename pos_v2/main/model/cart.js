@@ -2,8 +2,23 @@ function Cart() {
   this.cartItems = [];
 }
 
+Cart.prototype.findCartItem = function (barcode) {
+  for(var i = 0; i < this.cartItems.length; i++) {
+    if(this.cartItems[i].item.barcode === barcode) {
+      return this.cartItems[i];
+    }
+  }
+};
+
 Cart.prototype.addCartItem = function (cartItem) {
-  this.cartItems.push(cartItem);
+  var existed = this.findCartItem(cartItem.item.barcode);
+
+  if(!existed) {
+    this.cartItems.push(cartItem);
+  }else{
+    existed.count += cartItem.count;
+  }
+
 };
 
 Cart.prototype.getAmount = function () {
@@ -16,30 +31,33 @@ Cart.prototype.getAmount = function () {
   return amount;
 };
 
-Cart.prototype.getSavedMoney = function () {
+Cart.prototype.getCartItemsString = function () {
+  var cartItemsString = '';
+
+  this.cartItems.forEach(function (cartItem) {
+    cartItemsString += cartItem.getString();
+  });
+
+  return cartItemsString;
+};
+
+Cart.prototype.getSavedMoney = function (discountItemsDetail) {
   var savedMoney = 0;
 
-  this.cartItems.forEach(function(cartItem) {
-    savedMoney += cartItem.freeCount * cartItem.price;
+  discountItemsDetail.forEach(function (discountItemDetail) {
+    savedMoney += discountItemDetail.savedMoney;
   });
 
   return savedMoney;
 };
 
-Cart.prototype.getCartItemsString = function () {
-  var cartItemsString = '';
-  this.cartItems.forEach(function (cartItem) {
-    cartItemsString += cartItem.getString();
-  });
-  return cartItemsString;
-};
+Cart.prototype.getFreeItemsString = function (discountItemsDetail) {
+  var freeItemsString = '';
 
-Cart.prototype.getDiscountItemsString = function () {
-  var discountItemsString = '挥泪赠送商品：\n';
-
-  this.cartItems.forEach(function (cartItem) {
-    discountItemsString += cartItem.getDiscountString();
+  discountItemsDetail.forEach(function (discountItemDetail) {
+    var freeItem = discountItemDetail.cartItem;
+    freeItemsString += '名称：' + freeItem.item.name + '，数量：' + discountItemDetail.freeCount + freeItem.item.unit + '\n';
   });
 
-  return discountItemsString;
+  return freeItemsString;
 };

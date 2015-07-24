@@ -4,3 +4,13 @@ function Item(barcode, name, unit, price) {
   this.unit = unit;
   this.price = price || 0.00;
 }
+Item.find = function (barcode) {
+  var allItems = loadAllItems();
+  
+  for(var i = 0; i < allItems.length; i++) {
+    if(allItems[i].barcode === barcode){
+      return allItems[i];
+    }
+  }
+
+};

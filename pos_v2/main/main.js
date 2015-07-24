@@ -1,8 +1,14 @@
 function printReceipt(tags) {
-  var pos = new POS();
-  var counter = pos.countBarcodes(tags);
+
   var cart = new Cart();
-  pos.addCartItems(counter,cart);
-  var receipt = new Receipt(cart);
-  receipt.print();
+  var scanner = new Scanner();
+  var pos = new POS(cart,scanner);
+  pos.scan(tags);
+
+  pos.discount(loadPromotions()[0]);
+
+  var receipt = pos.getReceipt();
+
+  console.log(receipt);
+
 }

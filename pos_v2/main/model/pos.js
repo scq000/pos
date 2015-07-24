@@ -1,44 +1,34 @@
-function POS() {}
+function POS(cart,scanner) {
+  this.cart = cart;
+  this.scanner = scanner;
+}
 
-POS.prototype.countBarcodes = function (tags) {
-  var counter = {};
-
-  tags.forEach(function (tag) {
-    var barcode = tag.split('-')[0];
-    var count = parseFloat(tag.split('-')[1]) || 1;
-    counter[barcode] = (counter[barcode] || 0) + (count || 1);
-  });
-
-  return counter;
-};
-
-POS.prototype.findItem = function (barcode) {
-  var allItems = loadAllItems();
-
-  for (var i = 0; i < allItems.length; i++) {
-    if(allItems[i].barcode === barcode) {
-      return allItems[i];
-    }
+POS.prototype.scan = function (tags){
+  for(var i = 0; i < tags.length; i++) {
+    var cartItem = this.scanner.scan(tags[i]);
+    this.cart.addCartItem(cartItem);
   }
 };
 
-POS.prototype.addCartItems = function (counter,cart) {
-    var promotions = loadPromotions();
-
-    for(var barcode in counter) {
-      var item = this.findItem(barcode);
-      var cartItem = new CartItem(item, counter[barcode]);
-      this.discount(cartItem,promotions);
-      cart.addCartItem(cartItem);
-  }
+POS.prototype.discount = function (promotion) {
+  var promotionCalculator = new PromotionCalculator(promotion,this.cart);
+  this.discountItemsDetail = promotionCalculator.getDiscountItemsDetial();
 };
 
-POS.prototype.discount = function (cartItem,promotions) {
-  promotions.forEach(function (promotion) {
-    if(promotion.type === 'BUY_TWO_GET_ONE_FREE') {
-      var isExisted =  (promotion.barcodes.indexOf(cartItem.barcode) != -1);
-      cartItem.freeCount = isExisted ? Math.floor(cartItem.count / 3)
-                                                             :  0;
-    }
-  });
+POS.prototype.getReceipt = function () {
+
+  var receipt =
+  '***<没钱赚商店>收据***\n' +
+  '打印时间：' + Utils.getCurrentTime() +'\n' +
+  '----------------------\n' +
+    this.cart.getCartItemsString() +
+  '----------------------\n' +
+  '挥泪赠送商品：\n' +
+    this.cart.getFreeItemsString(this.discountItemsDetail)+
+  '----------------------\n' +
+  '总计：' + Utils.formatPrice(this.cart.getAmount()) + '(元)\n' +
+  '节省：' + Utils.formatPrice(this.cart.getSavedMoney(this.discountItemsDetail)) + '(元)\n' +
+  '**********************';
+
+  return receipt;
 };
